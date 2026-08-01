@@ -1,5 +1,10 @@
+using EmployeeDirectory.Application.Interfaces;
+using EmployeeDirectory.Application.Services;
+using EmployeeDirectory.Domain.Interfaces;
 using EmployeeDirectory.Infrastructure.Data;
+using EmployeeDirectory.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +18,9 @@ var connectionString =
 
 builder.Services.AddDbContext<EmployeeDirectoryDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
