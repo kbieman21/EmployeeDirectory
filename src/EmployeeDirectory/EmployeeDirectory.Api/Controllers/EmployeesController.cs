@@ -36,55 +36,84 @@ namespace EmployeeDirectory.Api.Controllers
             return Ok(employee);
         }
 
+        //[HttpPost]
+        //public async Task<ActionResult<EmployeeDto>> Create(
+        //    CreateEmployeeDto employeeDto)
+        //{
+        //    try
+        //    {
+        //        var createdEmployee =
+        //            await _employeeService.CreateAsync(employeeDto);
+
+        //        return CreatedAtAction(
+        //            nameof(GetById),
+        //            new { id = createdEmployee.Id },
+        //            createdEmployee);
+        //    }
+        //    catch (ArgumentException ex)
+        //    {
+        //        return BadRequest(new { message = ex.Message });
+        //    }
+        //    catch (InvalidOperationException ex)
+        //    {
+        //        return Conflict(new { message = ex.Message });
+        //    }
+        //}
+
         [HttpPost]
         public async Task<ActionResult<EmployeeDto>> Create(
-            CreateEmployeeDto employeeDto)
+    CreateEmployeeDto employeeDto)
         {
-            try
-            {
-                var createdEmployee =
-                    await _employeeService.CreateAsync(employeeDto);
+            var createdEmployee =
+                await _employeeService.CreateAsync(employeeDto);
 
-                return CreatedAtAction(
-                    nameof(GetById),
-                    new { id = createdEmployee.Id },
-                    createdEmployee);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(new { message = ex.Message });
-            }
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = createdEmployee.Id },
+                createdEmployee);
         }
+
+        //[HttpPut("{id:int}")]
+        //public async Task<IActionResult> Update(
+        //    int id,
+        //    UpdateEmployeeDto employeeDto)
+        //{
+        //    try
+        //    {
+        //        var updated =
+        //            await _employeeService.UpdateAsync(id, employeeDto);
+
+        //        if (!updated)
+        //        {
+        //            return NotFound();
+        //        }
+
+        //        return NoContent();
+        //    }
+        //    catch (ArgumentException ex)
+        //    {
+        //        return BadRequest(new { message = ex.Message });
+        //    }
+        //    catch (InvalidOperationException ex)
+        //    {
+        //        return Conflict(new { message = ex.Message });
+        //    }
+        //}
 
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(
-            int id,
-            UpdateEmployeeDto employeeDto)
+    int id,
+    UpdateEmployeeDto employeeDto)
         {
-            try
-            {
-                var updated =
-                    await _employeeService.UpdateAsync(id, employeeDto);
+            var updated =
+                await _employeeService.UpdateAsync(id, employeeDto);
 
-                if (!updated)
-                {
-                    return NotFound();
-                }
+            if (!updated)
+            {
+                return NotFound();
+            }
 
-                return NoContent();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(new { message = ex.Message });
-            }
+            return NoContent();
         }
 
         [HttpDelete("{id:int}")]

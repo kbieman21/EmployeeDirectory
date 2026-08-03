@@ -2,6 +2,9 @@
   <Folder Name="/Solution Items/">
     <File Path="../../README.md" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EmployeeDirectory.Application.Tests/EmployeeDirectory.Application.Tests.csproj" />
+  </Folder>
   <Project Path="EmployeeDirectory.Api/EmployeeDirectory.Api.csproj" />
   <Project Path="EmployeeDirectory.Application/EmployeeDirectory.Application.csproj" />
   <Project Path="EmployeeDirectory.Domain/EmployeeDirectory.Domain.csproj" />
