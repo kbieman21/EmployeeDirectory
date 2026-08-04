@@ -9,7 +9,9 @@ namespace EmployeeDirectory.Application.Interfaces
 {
     public interface IEmployeeService
     {
-        Task<IEnumerable<EmployeeDto>> GetAllAsync();
+        //Task<IEnumerable<EmployeeDto>> GetAllAsync();
+        Task<PagedResult<EmployeeDto>> GetPagedAsync(
+            EmployeeQueryParameters parameters);
 
         Task<EmployeeDto?> GetByIdAsync(int id);
 

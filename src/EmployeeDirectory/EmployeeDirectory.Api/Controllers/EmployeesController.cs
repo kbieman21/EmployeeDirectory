@@ -15,12 +15,21 @@ namespace EmployeeDirectory.Api.Controllers
             _employeeService = employeeService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetAll()
-        {
-            var employees = await _employeeService.GetAllAsync();
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetAll()
+        //{
+        //    var employees = await _employeeService.GetAllAsync();
 
-            return Ok(employees);
+        //    return Ok(employees);
+        //}
+
+        [HttpGet]
+        public async Task<ActionResult<PagedResult<EmployeeDto>>> GetPaged(
+    [FromQuery] EmployeeQueryParameters parameters)
+        {
+            var result = await _employeeService.GetPagedAsync(parameters);
+
+            return Ok(result);
         }
 
         [HttpGet("{id:int}")]

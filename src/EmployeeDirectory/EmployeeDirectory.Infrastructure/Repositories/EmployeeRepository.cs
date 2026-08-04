@@ -19,14 +19,63 @@ namespace EmployeeDirectory.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Employee>> GetAllAsync()
+        //public async Task<IEnumerable<Employee>> GetAllAsync()
+        //{
+        //    return await _context.Employees
+        //        .AsNoTracking()
+        //        .Include(e => e.Department)
+        //        .OrderBy(e => e.LastName)
+        //        .ThenBy(e => e.FirstName)
+        //        .ToListAsync();
+        //}
+
+        public async Task<(
+    IReadOnlyCollection<Employee> Items,
+    int TotalCount)> GetPagedAsync(
+        int pageNumber,
+        int pageSize,
+        string? search,
+        int? departmentId,
+        string sortBy,
+        bool sortDescending)
         {
-            return await _context.Employees
+            var query = _context.Employees
                 .AsNoTracking()
-                .Include(e => e.Department)
-                .OrderBy(e => e.LastName)
-                .ThenBy(e => e.FirstName)
+                .Include(employee => employee.Department)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var normalizedSearch = search.Trim();
+
+                query = query.Where(employee =>
+                    employee.FirstName.Contains(normalizedSearch) ||
+                    employee.LastName.Contains(normalizedSearch) ||
+                    employee.Email.Contains(normalizedSearch) ||
+                    employee.JobTitle.Contains(normalizedSearch));
+            }
+
+            if (departmentId.HasValue)
+            {
+                query = query.Where(employee =>
+                    employee.DepartmentId == departmentId.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            query = ApplySorting(
+                query,
+                sortBy,
+                sortDescending);
+
+            var skip = (pageNumber - 1) * pageSize;
+
+            var employees = await query
+                .Skip(skip)
+                .Take(pageSize)
                 .ToListAsync();
+
+            return (employees, totalCount);
         }
 
         public async Task<Employee?> GetByIdAsync(int id)
@@ -73,6 +122,56 @@ namespace EmployeeDirectory.Infrastructure.Repositories
                 e.Email.ToLower() == normalizedEmail &&
                 (!excludedEmployeeId.HasValue ||
                  e.Id != excludedEmployeeId.Value));
+        }
+
+        private static IQueryable<Employee> ApplySorting(
+    IQueryable<Employee> query,
+    string sortBy,
+    bool descending)
+        {
+            var normalizedSortBy =
+                sortBy.Trim().ToLowerInvariant();
+
+            return normalizedSortBy switch
+            {
+                "firstname" => descending
+                    ? query.OrderByDescending(employee => employee.FirstName)
+                        .ThenByDescending(employee => employee.Id)
+                    : query.OrderBy(employee => employee.FirstName)
+                        .ThenBy(employee => employee.Id),
+
+                "email" => descending
+                    ? query.OrderByDescending(employee => employee.Email)
+                        .ThenByDescending(employee => employee.Id)
+                    : query.OrderBy(employee => employee.Email)
+                        .ThenBy(employee => employee.Id),
+
+                "jobtitle" => descending
+                    ? query.OrderByDescending(employee => employee.JobTitle)
+                        .ThenByDescending(employee => employee.Id)
+                    : query.OrderBy(employee => employee.JobTitle)
+                        .ThenBy(employee => employee.Id),
+
+                "hiredate" => descending
+                    ? query.OrderByDescending(employee => employee.HireDate)
+                        .ThenByDescending(employee => employee.Id)
+                    : query.OrderBy(employee => employee.HireDate)
+                        .ThenBy(employee => employee.Id),
+
+                "department" => descending
+                    ? query.OrderByDescending(employee => employee.Department.Name)
+                        .ThenByDescending(employee => employee.Id)
+                    : query.OrderBy(employee => employee.Department.Name)
+                        .ThenBy(employee => employee.Id),
+
+                _ => descending
+                    ? query.OrderByDescending(employee => employee.LastName)
+                        .ThenByDescending(employee => employee.FirstName)
+                        .ThenByDescending(employee => employee.Id)
+                    : query.OrderBy(employee => employee.LastName)
+                        .ThenBy(employee => employee.FirstName)
+                        .ThenBy(employee => employee.Id)
+            };
         }
     }
 }

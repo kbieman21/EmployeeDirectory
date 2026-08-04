@@ -33,11 +33,42 @@ namespace EmployeeDirectory.Application.Services
         //    return employees.Select(MapToDto);
         //}
 
-        public async Task<IEnumerable<EmployeeDto>> GetAllAsync()
-        {
-            var employees = await _employeeRepository.GetAllAsync();
+        //public async Task<IEnumerable<EmployeeDto>> GetAllAsync()
+        //{
+        //    var employees = await _employeeRepository.GetAllAsync();
 
-            return _mapper.Map<IEnumerable<EmployeeDto>>(employees);
+        //    return _mapper.Map<IEnumerable<EmployeeDto>>(employees);
+        //}
+
+        public async Task<PagedResult<EmployeeDto>> GetPagedAsync(
+    EmployeeQueryParameters parameters)
+        {
+            ArgumentNullException.ThrowIfNull(parameters);
+
+            var sortDescending =
+                parameters.SortDirection.Equals(
+                    "desc",
+                    StringComparison.OrdinalIgnoreCase);
+
+            var result = await _employeeRepository.GetPagedAsync(
+                parameters.PageNumber,
+                parameters.PageSize,
+                parameters.Search,
+                parameters.DepartmentId,
+                parameters.SortBy,
+                sortDescending);
+
+            var employeeDtos =
+                _mapper.Map<IReadOnlyCollection<EmployeeDto>>(
+                    result.Items);
+
+            return new PagedResult<EmployeeDto>
+            {
+                Items = employeeDtos,
+                PageNumber = parameters.PageNumber,
+                PageSize = parameters.PageSize,
+                TotalCount = result.TotalCount
+            };
         }
 
         //public async Task<EmployeeDto?> GetByIdAsync(int id)
