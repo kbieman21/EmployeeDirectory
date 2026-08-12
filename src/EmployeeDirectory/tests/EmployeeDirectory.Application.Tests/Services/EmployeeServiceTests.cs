@@ -32,7 +32,7 @@ public class EmployeeServiceTests
         _service = new EmployeeService(
             _employeeRepositoryMock.Object,
             _departmentRepositoryMock.Object,
-            _mapper);
+            _mapper, NullLogger<EmployeeService>.Instance);
 
     }
 

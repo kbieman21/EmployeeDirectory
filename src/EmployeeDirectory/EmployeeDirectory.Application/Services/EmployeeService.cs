@@ -3,6 +3,7 @@ using EmployeeDirectory.Application.DTOs;
 using EmployeeDirectory.Application.Interfaces;
 using EmployeeDirectory.Domain.Entities;
 using EmployeeDirectory.Domain.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +17,16 @@ namespace EmployeeDirectory.Application.Services
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<EmployeeService> _logger;
 
         public EmployeeService(
             IEmployeeRepository employeeRepository,
-            IDepartmentRepository departmentRepository, IMapper mapper)
+            IDepartmentRepository departmentRepository, IMapper mapper, ILogger<EmployeeService> logger)
         {
             _employeeRepository = employeeRepository;
             _departmentRepository = departmentRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         //public async Task<IEnumerable<EmployeeDto>> GetAllAsync()
@@ -139,6 +142,10 @@ namespace EmployeeDirectory.Application.Services
 
             if (department is null)
             {
+                _logger.LogWarning(
+   "Employee creation rejected because department {DepartmentId} does not exist",
+   employeeDto.DepartmentId);
+
                 throw new ArgumentException(
                     $"Department with ID {employeeDto.DepartmentId} does not exist.");
             }
@@ -149,6 +156,10 @@ namespace EmployeeDirectory.Application.Services
 
             if (emailExists)
             {
+                _logger.LogWarning(
+      "Employee creation rejected because email {Email} already exists",
+      employeeDto.Email);
+
                 throw new InvalidOperationException(
                     $"An employee with email '{employeeDto.Email}' already exists.");
             }
@@ -162,6 +173,13 @@ namespace EmployeeDirectory.Application.Services
 
             var createdEmployee =
                 await _employeeRepository.AddAsync(employee);
+
+            // Log the creation of the employee
+            _logger.LogInformation(
+    "Employee {EmployeeId} created with email {Email} in department {DepartmentId}",
+    createdEmployee.Id,
+    createdEmployee.Email,
+    createdEmployee.DepartmentId);
 
             return _mapper.Map<EmployeeDto>(createdEmployee);
         }
@@ -224,6 +242,9 @@ namespace EmployeeDirectory.Application.Services
 
             if (existingEmployee is null)
             {
+                _logger.LogWarning(
+        "Employee update requested for nonexistent employee {EmployeeId}",
+        id);
                 return false;
             }
 
@@ -233,6 +254,8 @@ namespace EmployeeDirectory.Application.Services
 
             if (department is null)
             {
+               
+
                 throw new ArgumentException(
                     $"Department with ID {employeeDto.DepartmentId} does not exist.");
             }
@@ -244,6 +267,7 @@ namespace EmployeeDirectory.Application.Services
 
             if (emailExists)
             {
+               
                 throw new InvalidOperationException(
                     $"Another employee with email '{employeeDto.Email}' already exists.");
             }
@@ -264,6 +288,10 @@ namespace EmployeeDirectory.Application.Services
 
             await _employeeRepository.UpdateAsync(existingEmployee);
 
+            _logger.LogInformation(
+    "Employee {EmployeeId} updated",
+    existingEmployee.Id);
+
             return true;
         }
 
@@ -273,10 +301,18 @@ namespace EmployeeDirectory.Application.Services
 
             if (employee is null)
             {
+                _logger.LogWarning(
+           "Employee deletion requested for nonexistent employee {EmployeeId}",
+           id);
+
                 return false;
             }
 
             await _employeeRepository.DeleteAsync(employee);
+
+            _logger.LogInformation(
+       "Employee {EmployeeId} deleted",
+       id);
 
             return true;
         }
