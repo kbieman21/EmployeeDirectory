@@ -4,16 +4,19 @@ using EmployeeDirectory.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace EmployeeDirectory.Infrastructure.Migrations
+namespace EmployeeDirectory.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(EmployeeDirectoryDbContext))]
-    partial class EmployeeDirectoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260813152150_CreateUsersTable")]
+    partial class CreateUsersTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

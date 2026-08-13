@@ -13,5 +13,7 @@ namespace EmployeeDirectory.Infrastructure.Data
         public DbSet<Employee> Employees => Set<Employee>();
 
         public DbSet<Department> Departments => Set<Department>();
+        public DbSet<AppUser> Users => Set<AppUser>();
+
     }
 }
