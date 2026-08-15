@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using EmployeeDirectory.Api.Middleware;
 using EmployeeDirectory.Application.Mappings;
 using Microsoft.AspNetCore.Identity;
+using EmployeeDirectory.Domain.Entities;
 
 
 
@@ -45,7 +46,7 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<PasswordHasher<object>>();
+builder.Services.AddScoped<PasswordHasher<AppUser>>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
