@@ -9,6 +9,8 @@ namespace EmployeeDirectory.Application.Interfaces
 {
     public interface IAuthService
     {
-        Task<bool> ValidateCredentialsAsync(LoginRequestDto loginRequest);
+        //Task<bool> ValidateCredentialsAsync(LoginRequestDto loginRequest);
+        //renaming the method because we moving to JWT
+        Task<LoginResponseDto?> LoginAsync(LoginRequestDto loginRequest);
     }
 }

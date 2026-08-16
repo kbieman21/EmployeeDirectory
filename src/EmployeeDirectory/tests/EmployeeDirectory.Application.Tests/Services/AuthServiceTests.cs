@@ -1,5 +1,6 @@
 ﻿using EmployeeDirectory.Application.DTOs;
 using EmployeeDirectory.Application.Interfaces;
+using EmployeeDirectory.Application.Models;
 using EmployeeDirectory.Application.Services;
 using EmployeeDirectory.Domain.Entities;
 using EmployeeDirectory.Domain.Interfaces;
@@ -17,19 +18,23 @@ namespace EmployeeDirectory.Application.Tests.Services
     {
         //mock the IUserRepository and use a real PasswordHasher<AppUser> to test the ValidateCredentialsAsync method of the AuthService class
         private readonly Mock<IUserRepository> _userRepositoryMock;
+        private readonly Mock<ITokenService> _tokenServiceMock;
         private readonly PasswordHasher<AppUser> _passwordHasher;
         private readonly AuthService _service;
-        public AuthServiceTests() 
+        public AuthServiceTests()
         {
             _userRepositoryMock = new Mock<IUserRepository>();
+            _tokenServiceMock = new Mock<ITokenService>();
             _passwordHasher = new PasswordHasher<AppUser>();
-            _service = new AuthService(_userRepositoryMock.Object, _passwordHasher);
 
-
+            _service = new AuthService(
+                _userRepositoryMock.Object,
+                _tokenServiceMock.Object,
+                _passwordHasher);
         }
 
         [Fact]
-        public async Task ValidateCredentialsAsync_WithCorrectPassword_ReturnsTrue()
+        public async Task LoginAsync_WithCorrectPassword_ReturnsNotNull()
         {
             // Arrange
             var email = "test@example.com";
@@ -51,15 +56,29 @@ namespace EmployeeDirectory.Application.Tests.Services
                 Password = password
             };
 
+            var expiresAt =
+    DateTime.UtcNow.AddHours(1);
+
+            _tokenServiceMock
+                .Setup(service =>
+                    service.CreateToken(user))
+                .Returns(new TokenResult
+                {
+                    Token = "test-jwt-token",
+                    ExpiresAt = expiresAt
+                });
             // Act
-            var result = await _service.ValidateCredentialsAsync(loginRequest);
+            var result = await _service.LoginAsync(loginRequest);// ValidateCredentialsAsync(loginRequest);
 
             // Assert
-            Assert.True(result);
+            Assert.NotNull(result);
+            Assert.Equal("test-jwt-token", result.Token);
+            //Assert.True(result.ExpiresAt > DateTime.UtcNow);
+            Assert.Equal(expiresAt, result.ExpiresAt);
         }
 
         [Fact]
-        public async Task ValidateCredentialsAsync_WithWrongPassword_ReturnsFalse()
+        public async Task LoginAsync_WithWrongPassword_ReturnsNull()
         {
             // Arrange
             var email = "test@example.com";
@@ -83,14 +102,16 @@ namespace EmployeeDirectory.Application.Tests.Services
             };
 
             // Act
-            var result = await _service.ValidateCredentialsAsync(loginRequest);
+            var result = await _service.LoginAsync(loginRequest);// ValidateCredentialsAsync(loginRequest);
 
             // Assert
-            Assert.False(result);
+            //Assert.False(result);
+            //Assert.NotNull(result);
+            Assert.Null(result);
         }
 
         [Fact]
-        public async Task ValidateCredentialsAsync_WithUnknownUser_ReturnsFalse()
+        public async Task LoginAsync_WithUnknownUser_ReturnsNull()
         {
             // Arrange
             var email = "unknown@example.com";
@@ -106,10 +127,12 @@ namespace EmployeeDirectory.Application.Tests.Services
             };
 
             // Act
-            var result = await _service.ValidateCredentialsAsync(loginRequest);
+            var result = await _service.LoginAsync(loginRequest);// ValidateCredentialsAsync(loginRequest);
 
             // Assert
-            Assert.False(result);
+            // Assert.False(result);
+            //Assert.NotNull(result);
+            Assert.Null(result);
         }
     }
 }

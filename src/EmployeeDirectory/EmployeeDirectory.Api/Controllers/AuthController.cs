@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Core;
 using EmployeeDirectory.Application.DTOs;
 using EmployeeDirectory.Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeDirectory.Api.Controllers
 {
@@ -18,10 +19,12 @@ namespace EmployeeDirectory.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequest)
         {
-            var isValid =
-            await _authService.ValidateCredentialsAsync(loginRequest);
+            //var isValid =
+            //await _authService.ValidateCredentialsAsync(loginRequest);
+            //CHANGING THE ABOVE CODE TO BELOW BECAUSE WE MOVED TO JWT
+            var loginResponse = await _authService.LoginAsync(loginRequest);
 
-            if (!isValid)
+            if (loginResponse is null)
             {
                 return Unauthorized(new
                 {
@@ -29,10 +32,7 @@ namespace EmployeeDirectory.Api.Controllers
                 });
             }
 
-            return Ok(new
-            {
-                message = "Login successful."
-            });
+            return Ok(loginResponse);
         }
     }
 }
