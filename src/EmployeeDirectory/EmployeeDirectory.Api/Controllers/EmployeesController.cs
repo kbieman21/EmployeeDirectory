@@ -1,6 +1,8 @@
 ﻿using EmployeeDirectory.Application.DTOs;
 using EmployeeDirectory.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EmployeeDirectory.Api.Controllers
 {
@@ -22,7 +24,7 @@ namespace EmployeeDirectory.Api.Controllers
 
         //    return Ok(employees);
         //}
-
+       
         [HttpGet]
         public async Task<ActionResult<PagedResult<EmployeeDto>>> GetPaged(
     [FromQuery] EmployeeQueryParameters parameters)
@@ -32,6 +34,7 @@ namespace EmployeeDirectory.Api.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id:int}")]
         public async Task<ActionResult<EmployeeDto>> GetById(int id)
         {
@@ -41,6 +44,9 @@ namespace EmployeeDirectory.Api.Controllers
             {
                 return NotFound();
             }
+            //debugging
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
 
             return Ok(employee);
         }
