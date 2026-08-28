@@ -8,6 +8,7 @@ namespace EmployeeDirectory.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class EmployeesController : Controller
     {
         private readonly IEmployeeService _employeeService;
@@ -24,7 +25,7 @@ namespace EmployeeDirectory.Api.Controllers
 
         //    return Ok(employees);
         //}
-       
+        
         [HttpGet]
         public async Task<ActionResult<PagedResult<EmployeeDto>>> GetPaged(
     [FromQuery] EmployeeQueryParameters parameters)
@@ -34,7 +35,7 @@ namespace EmployeeDirectory.Api.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "Admin")]
+        
         [HttpGet("{id:int}")]
         public async Task<ActionResult<EmployeeDto>> GetById(int id)
         {
@@ -74,7 +75,7 @@ namespace EmployeeDirectory.Api.Controllers
         //        return Conflict(new { message = ex.Message });
         //    }
         //}
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<EmployeeDto>> Create(
     CreateEmployeeDto employeeDto)
@@ -115,6 +116,7 @@ namespace EmployeeDirectory.Api.Controllers
         //    }
         //}
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(
     int id,
@@ -131,6 +133,7 @@ namespace EmployeeDirectory.Api.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {

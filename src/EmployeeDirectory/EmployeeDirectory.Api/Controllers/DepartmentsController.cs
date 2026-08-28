@@ -1,11 +1,13 @@
 ﻿using EmployeeDirectory.Application.DTOs;
 using EmployeeDirectory.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeDirectory.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class DepartmentsController : ControllerBase
     {
         private readonly IDepartmentService _departmentService;
@@ -35,7 +37,7 @@ namespace EmployeeDirectory.Api.Controllers
 
             return Ok(department);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<DepartmentDto>> Create(
             CreateDepartmentDto departmentDto)
@@ -49,6 +51,7 @@ namespace EmployeeDirectory.Api.Controllers
                 createdDepartment);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(
             int id,
@@ -65,6 +68,7 @@ namespace EmployeeDirectory.Api.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
