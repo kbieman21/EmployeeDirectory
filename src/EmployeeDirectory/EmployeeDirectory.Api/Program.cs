@@ -126,6 +126,17 @@ builder.Services
             };
     });
 
+//configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowEmployeeDirectoryWeb", policy =>
+    {
+        policy
+            .WithOrigins("https://localhost:7205")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -140,8 +151,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowEmployeeDirectoryWeb");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllers();
 

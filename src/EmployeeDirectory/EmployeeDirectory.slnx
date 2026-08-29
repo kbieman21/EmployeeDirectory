@@ -9,4 +9,5 @@
   <Project Path="EmployeeDirectory.Application/EmployeeDirectory.Application.csproj" />
   <Project Path="EmployeeDirectory.Domain/EmployeeDirectory.Domain.csproj" />
   <Project Path="EmployeeDirectory.Infrastructure/EmployeeDirectory.Infrastructure.csproj" />
+  <Project Path="EmployeeDirectory.Web/EmployeeDirectory.Web.csproj" Id="587b3108-be9a-450d-b7ad-96e7cc995119" />
 </Solution>
